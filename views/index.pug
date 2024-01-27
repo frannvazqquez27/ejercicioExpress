@@ -1,0 +1,41 @@
+extends layout
+
+block content
+  h1= title
+  form#multiplicar-form
+    label(for="base") ¿Base de multiplicación?
+    input#base(type="number" name="base" required)
+    button(type="button" class="btn btn-primary" onclick="generarTabla()") Enviar
+  #resultado-container
+
+  .modal.fade#exampleModal(tabindex="-1", aria-labelledby="exampleModalLabel", aria-hidden="true")
+    .modal-dialog
+      .modal-content
+        .modal-header
+          h5.modal-title Acerca De
+          button.btn-close(type="button", data-dismiss="modal", aria-label="Close")
+        .modal-body
+          | Acerca de... Es una ventana modal BRO
+        .modal-footer
+          button(type="button", data-dismiss="modal") Cerrar
+
+  script.
+    async function generarTabla() {
+      const base = document.getElementById('base').value;
+
+      try {
+        const response = await fetch('/multiplicar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ base }),
+        });
+
+        const resultHTML = await response.text();
+        document.getElementById('resultado-container').innerHTML = resultHTML;
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error generating multiplication table.');
+      }
+    }

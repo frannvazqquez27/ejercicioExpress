@@ -1,0 +1,47 @@
+extends layout
+
+block content
+    h1= title
+    form#quiniela-form
+        ul#quiniela-list
+            each opcion in quiniela 
+                li= opcion
+        button(type="button" class="btn btn-primary" onclick="solicitarQuiniela()") Solicitar Quiniela
+    #resultado-container
+        // Elimina la siguiente línea para evitar duplicar la quiniela
+        // p#quiniela-resultado
+
+    .modal.fade#exampleModal(tabindex="-1", aria-labelledby="exampleModalLabel", aria-hidden="true")
+        .modal-dialog
+            .modal-content
+                .modal-header
+                    h5.modal-title Acerca De
+                    button.btn-close(type="button", data-dismiss="modal", aria-label="Close")
+                .modal-body
+                    | Acerca de... Es una ventana modal BRO
+                .modal-footer
+                    button(type="button", data-dismiss="modal") Cerrar
+
+    script(src="https://cdn.socket.io/4.1.2/socket.io.min.js").
+    script.
+        const socket = io();
+
+        function solicitarQuiniela() {
+            try {
+                socket.emit('solicitar_quiniela');
+                socket.on('quiniela_generada', (quiniela) => {
+                    // Modifica directamente la lista existente
+                    const quinielaList = document.getElementById('quiniela-list');
+                    quinielaList.innerHTML = '';  // Limpiar la lista existente
+
+                    quiniela.forEach((opcion) => {
+                        const li = document.createElement('li');
+                        li.textContent = opcion;
+                        quinielaList.appendChild(li);
+                    });
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error solicitando la quiniela.');
+            }
+        }
